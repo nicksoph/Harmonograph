@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zoom and Pan</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div class="container">
+        <div class="left-column">
+            <div id="home">
+                <div id="settingsDisplay">
+                    <h2>Settings:</h2>
+                    <div>Start Time: <span id="displayStartTime"></span></div>
+                    <div>No. Steps: <span id="displayNumSteps"></span></div>
+                    <div>Time Step: <span id="displayTimeStep"></span></div>
+                    <div id=pens>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Pen</th>
+                                    <th>Axis</th>
+                                    <th>Amp</th>
+                                    <th>Freq</th>
+                                    <th>Phase</th>
+                                    <th>Damp</th>
+                                </tr>
+                            </thead>
+                            <tbody id="pendulumSettings"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div id="timecontrols"></div>
+            </br>
+            <div id="addpens">
+                <button id="addPendulum">Add Pendulum</button>
+                <button id="deletePendulum">Delete Pendulum</button>
+                <button id="run">Run</button>
+            </div>
+            <div id="pendCtrls"></div>
+            <div id="colour"></div>
+            <div id="width"></div>
+            <div id="file"></div>
+        </div>
+
+        <div class="right-column">
+            <div id="svg-viewport">
+                <div id="svg-container"></div>
+            </div>
+        </div>
+    </div>
+    <script src='panzoom.js'></script>
+    <script defer src="script.js"></script>
+</body>
+
+</html>
