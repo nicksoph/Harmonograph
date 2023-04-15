@@ -4,8 +4,9 @@
 }
 
 .left-column {
-    width: 350px;
+    width: 360px;
     background-color: lightgray;
+    padding: 12px;
 }
 
 .right-column {
@@ -24,4 +25,46 @@
 #svg-container {
     position: relative;
     min-height: 100%;
+}
+
+.settings-container {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.control-input {
+    width: 80%;
+    max-width: 60px;
+}
+
+#pendCtrls {
+    text-align: right;
+}
+
+#runsave {
+    text-align: right;
+}
+
+#addpens {
+    text-align: center;
+}
+
+#timecontrols {
+    text-align: right;
+}
+
+#timecontrols input[type="number"] {
+    width: 55px;
+}
+
+#timerunbtns {
+    display: flex;
+}
+
+#timecontrols {
+    flex: 1;
+}
+
+#input-container input[type="number"] {
+    width: 80px;
 }
