@@ -4,8 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Zoom and Pan2</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Zoom and Pan</title>
+    <link rel="stylesheet" href="styles2.css">
 </head>
 
 <body>
@@ -31,7 +31,26 @@
                     <button onclick="loadData()">Load Data</button>
                 </div>
             </div>
+            <!-- <div id="rotate">
+                <input type="checkbox" id="rotate-checkbox" onclick="toggleRotation()">
+                <label for="rotate-checkbox">Rotate</label>
+                <br>
 
+                <label for="center-x-input">center X:</label>
+                <input type="number" id="center-x-input" step="0.1" onchange="updateCenter()"
+                    style="writing-mode: vertical-lr;">
+                <br>
+
+                <label for="center-y-input">center Y:</label>
+                <input type="number" id="center-y-input" step="0.1" onchange="updateCenter()"
+                    style="writing-mode: vertical-lr;">
+                <br>
+
+                <label for="rspeed-input">Speed:</label>
+                <input type="number" id="rspeed-input" step="0.1" onchange="updateRspeed()"
+                    style="writing-mode: vertical-lr;">
+
+            </div> -->
             <div id="pendCtrls"></div>
             <div id="addpens"><button id="addPendulum">Add Pendulum</button>
                 <button id="deletePendulum">Delete Pendulum</button>
@@ -63,29 +82,7 @@
         </div>
     </div>
     <script src='panzoom.js'></script>
-    <script defer src="script.js"></script>
+    <script defer src="script2.js"></script>
 </body>
 
 </html>
-
-
-<!-- <div id="rotate">
-                <input type="checkbox" id="rotate-checkbox" onclick="toggleRotation()">
-                <label for="rotate-checkbox">Rotate</label>
-                <br>
-
-                <label for="center-x-input">center X:</label>
-                <input type="number" id="center-x-input" step="0.1" onchange="updateCenter()"
-                    style="writing-mode: vertical-lr;">
-                <br>
-
-                <label for="center-y-input">center Y:</label>
-                <input type="number" id="center-y-input" step="0.1" onchange="updateCenter()"
-                    style="writing-mode: vertical-lr;">
-                <br>
-
-                <label for="rspeed-input">Speed:</label>
-                <input type="number" id="rspeed-input" step="0.1" onchange="updateRspeed()"
-                    style="writing-mode: vertical-lr;">
-
-            </div> -->
