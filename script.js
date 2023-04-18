@@ -10,11 +10,11 @@ const Time = { // the start/stop/steps data
     start: 0, end: 1, steps: 1000, oldStepsValue: 1000
 };
 const keyPoints = [  // the chosen fixed points and their widths
-    { order: 0, width: 20 },
-    { order: 50, width: 1 },
+    { order: 0, width: 1 },
+    { order: 50, width: 3 },
     { order: 100, width: 1 },
-    { order: 200, width: 20 },
-    { order: 999, width: 150 },
+    { order: 200, width: 2 },
+    { order: 999, width: 1 },
 ];
 const Pendulums = [ // the pendulums settings
     { axis: 'x', amplitude: 100, frequency: 33.02, phaseShift: 1.575, damping: .5 },
@@ -35,7 +35,7 @@ createControls(); // makes controls for Pendulums
 displayKeyPoints()
 main() // is run on updates and run button
 
-
+//then from gui
 function createPaddedViewBox(svg) {
     const padding = 10; // Change this value to adjust the padding
 
@@ -52,7 +52,7 @@ function createPaddedViewBox(svg) {
         minY = Math.min(minY, bbox.y);
         maxX = Math.max(maxX, bbox.x + bbox.width);
         maxY = Math.max(maxY, bbox.y + bbox.height);
-        console.log(element)
+        console.log(bbox)
     });
 
     const objectsBoundingBox = {
@@ -61,7 +61,7 @@ function createPaddedViewBox(svg) {
         width: maxX - minX,
         height: maxY - minY,
     };
-    console.log(objectsBoundingBox)
+    console.log("obbb", objectsBoundingBox)
     const paddedBoundingBox = {
         x: objectsBoundingBox.x - padding,
         y: objectsBoundingBox.y - padding,
@@ -111,10 +111,11 @@ function draw(Points, svgContainer) {
         path.setAttribute("fill", "none");
         svg.appendChild(path);
     });
+    svgContainer.appendChild(svg);
     const paddedViewBox = createPaddedViewBox(svg);
     console.log('Padded viewBox:', paddedViewBox);
-    // svg.setAttribute('viewBox', paddedViewBox);
-    svg.setAttribute('viewBox', '-2000 -2000 4000 4000');
+    svg.setAttribute('viewBox', paddedViewBox);
+    //svg.setAttribute('viewBox', '-2000 -2000 4000 4000');
 
 
     svgContainer.appendChild(svg);
@@ -311,7 +312,7 @@ function updateKeyPointOrder() {// ensures width points follow rules
 
     if (!isNaN(stepsValue) && keyPoints.length > 0) {
         // Calculate the scaling factor based on the old and new steps values
-        const scalingFactor = stepsValue / oldStepsValue;
+        const scalingFactor = stepsValue / Time.oldStepsValue;
 
         // Update the order values proportionally
         for (let i = 0; i < keyPoints.length; i++) {
