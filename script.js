@@ -1,27 +1,31 @@
 // Initial settings
-var svg = ""
-const Points = [];
+
+const multi = 10;  // multiplier to keep data in a sensible range - temp
+var svg = "" // the image
+const Points = []; // the points and their data
 const timeControlsDiv = document.getElementById("timecontrols");
 const svgContainer = document.getElementById("svg-container");
-const Time = {
-    start: 0, end: 1, steps: 1000
+
+const Time = { // the start/stop/steps data
+    start: 0, end: 1, steps: 1000, oldStepsValue: 1000
 };
-const keyPoints = [
-    { order: 0, width: 1 },
-    { order: 5, width: 3 },
-    { order: 999, width: 1 },
+const keyPoints = [  // the chosen fixed points and their widths
+    { order: 0, width: 20 },
+    { order: 50, width: 1 },
+    { order: 100, width: 1 },
+    { order: 200, width: 20 },
+    { order: 999, width: 150 },
 ];
-const multi = 100;
-const Pendulums = [
+const Pendulums = [ // the pendulums settings
     { axis: 'x', amplitude: 100, frequency: 33.02, phaseShift: 1.575, damping: .5 },
     { axis: 'y', amplitude: 100, frequency: 33, phaseShift: 0, damping: .5 },
     { axis: 'x', amplitude: 100, frequency: 66, phaseShift: 0, damping: .5 },
     { axis: 'y', amplitude: 100, frequency: 66.01, phaseShift: 1.54, damping: .5 }
 ];
-const settings = [
+const settings = [  // the settings of the pendulum controls
     { name: 'axis', type: 'radio', options: ['x', 'y'], default: 'x' },
-    { name: 'amplitude', type: 'range', min: 0, max: 1000, step: 0.1, default: 100 },
-    { name: 'frequency', type: 'range', min: 0, max: 1000, step: 0.1, default: 33 },
+    { name: 'amplitude', type: 'range', min: 0, max: 1000, step: 10, default: 100 },
+    { name: 'frequency', type: 'range', min: 0, max: 1000, step: 0.01, default: 33 },
     { name: 'phaseShift', type: 'range', min: -Math.PI, max: Math.PI, step: 0.01, default: 1.574 },
     { name: 'damping', type: 'range', min: 0, max: 1, step: 0.001, default: 0.5 }
 ];
@@ -31,24 +35,148 @@ createControls(); // makes controls for Pendulums
 displayKeyPoints()
 main() // is run on updates and run button
 
-function setWidths() {
-    setLineWidths(keyPoints, Points)
-    //for (i = 0; i < 10; i++) { console.log(Points[i], Points.length) }
-    draw(Points, svgContainer) // creates svg
-}
-function main() {
-    makeData(Points) // creates x,y data (with extras)
-    //   for (i = 0; i < 10; i++) { console.log(Points[i], Points.length) }
-    smoothCurve(Points) // creates curve handle data
 
+function createPaddedViewBox(svg) {
+    const padding = 10; // Change this value to adjust the padding
+
+    let minX = Infinity,
+        minY = Infinity,
+        maxX = -Infinity,
+        maxY = -Infinity;
+
+    // Iterate over all child elements and update the bounding box values
+    svg.childNodes.forEach((element) => {
+
+        const bbox = element.getBBox();
+        minX = Math.min(minX, bbox.x);
+        minY = Math.min(minY, bbox.y);
+        maxX = Math.max(maxX, bbox.x + bbox.width);
+        maxY = Math.max(maxY, bbox.y + bbox.height);
+        console.log(element)
+    });
+
+    const objectsBoundingBox = {
+        x: minX,
+        y: minY,
+        width: maxX - minX,
+        height: maxY - minY,
+    };
+    console.log(objectsBoundingBox)
+    const paddedBoundingBox = {
+        x: objectsBoundingBox.x - padding,
+        y: objectsBoundingBox.y - padding,
+        width: objectsBoundingBox.width + 2 * padding,
+        height: objectsBoundingBox.height + 2 * padding
+    };
+
+    function addSquare(x, y, size) {
+        const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+        rect.setAttribute('x', x);
+        rect.setAttribute('y', y);
+        rect.setAttribute('width', size);
+        rect.setAttribute('height', size);
+        rect.setAttribute('fill', 'none');
+        rect.setAttribute('stroke', 'black');
+        rect.setAttribute('stroke-width', '1');
+        svg.appendChild(rect);
+    }
+
+    // Add top left square
+    addSquare(paddedBoundingBox.x, paddedBoundingBox.y, padding);
+
+    // Add bottom right square
+    addSquare(paddedBoundingBox.x + paddedBoundingBox.width - padding, paddedBoundingBox.y + paddedBoundingBox.height - padding, padding);
+
+    // Return the padded bounding box values for the viewBox
+    return `${paddedBoundingBox.x} ${paddedBoundingBox.y} ${paddedBoundingBox.width} ${paddedBoundingBox.height}`;
+}
+function draw(Points, svgContainer) {
+    svgContainer.innerHTML = ""
+    svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    svg.setAttribute("width", "100%");
+    svg.setAttribute("height", "100%");
+    Points.forEach((line) => {
+        const { p1, cp1, cp2, p2, width } = line;
+        const { x: p1x, y: p1y } = p1;
+        const { x: cp1x, y: cp1y } = cp1;
+        const { x: cp2x, y: cp2y } = cp2;
+        const { x: p2x, y: p2y } = p2;
+        const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        const d = `M ${p1x} ${p1y} C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${p2x} ${p2y}`;
+        path.setAttribute("d", d);
+        path.setAttribute("stroke", "Red");
+        if (!width) { console.log("MISSING WIDTH!") }
+        //{ 
+        path.setAttribute("stroke-width", width.toString())
+        path.setAttribute("fill", "none");
+        svg.appendChild(path);
+    });
+    const paddedViewBox = createPaddedViewBox(svg);
+    console.log('Padded viewBox:', paddedViewBox);
+    // svg.setAttribute('viewBox', paddedViewBox);
+    svg.setAttribute('viewBox', '-2000 -2000 4000 4000');
+
+
+    svgContainer.appendChild(svg);
+    const panZoomInstance = panzoom(svg, {
+        zoomEnabled: true,
+        panEnabled: true,
+        controlIconsEnabled: true,
+        fit: true,
+        center: true,
+        minZoom: 0.015,
+        maxZoom: 1000,
+        initialZoom: 0.95,
+        beforePan: function () {
+            // Disable animation during panning to improve performance
+            panZoomInstance.disablePanAnimation();
+        },
+        onPan: function () {
+            // Re-enable animation after panning is complete
+            panZoomInstance.enablePanAnimation();
+        },
+        onZoom: function () {
+            // Update the viewBox after zooming
+            const { x, y } = panZoomInstance.getPan();
+            const zoomLevel = panZoomInstance.getZoom();
+            const viewBox = svg.getAttribute("viewBox").split(" ");
+            const viewBoxWidth = parseFloat(viewBox[2]);
+            const viewBoxHeight = parseFloat(viewBox[3]);
+        },
+    });
+    return (svg)
+};
+function saveSvg(svg) {// makes svg file and saves with random name
+
+    // Serialize the SVG content to a string
+    const svgString = new XMLSerializer().serializeToString(svg);
+
+    // Add the XML declaration to the beginning of the string
+    const svgFileContent = `<?xml version="1.0" encoding="UTF-8"?>\n${svgString}`;
+
+    // Create a Blob object with the SVG content
+    const blob = new Blob([svgFileContent], { type: "image/svg+xml" });
+
+    // Create a download link and click it to trigger the download
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = "my_svg_file.svg";
+    link.click();
+
+    // Revoke the object URL to free memory
+    URL.revokeObjectURL(link.href);
+};
+function main() {  // called by the run button and program to do main functions
+    makeData(Points) // creates x,y data (with extras)
+    smoothCurve(Points) // creates curve handle data
     chop(Points) // removes extra points made for curves
+    setLineWidths(keyPoints, Points)
     draw(Points, svgContainer) // creates svg
 };
-function events() {
+function events() {//sets the event listners that are permanent
     document.getElementById("start").addEventListener("input", updateStart);
     document.getElementById("end").addEventListener("input", updateEnd);
     document.getElementById("steps").addEventListener("input", updateSteps);
-
     document.getElementById("addPendulum").addEventListener("click", () => {
         Pendulums.push({ ...Pendulums[0] });
         createControls();
@@ -60,12 +188,11 @@ function events() {
     document.getElementById("run").addEventListener("click", () => {
         main()
     });
+    document.getElementById("save-svg").addEventListener("click", () => {
+        saveSvg()
+    });
 };
-//add line thickness
-function interpolate(a, b, t) {
-    return a + (b - a) * t;
-}
-function setLineWidths(keyPoints, Points) {
+function setLineWidths(keyPoints, Points) {//add line thickness
     let keyPointOrder = 0;
 
     for (let i = 0; i < Points.length; i++) {
@@ -100,53 +227,56 @@ function setLineWidths(keyPoints, Points) {
         }
     }
 }
-function displayKeyPoints() {
-    const container = document.getElementById("keyPointsContainer");
-    container.innerHTML = "";
-
-    keyPoints.forEach((keyPoint, index) => {
-        const keyPointDiv = document.createElement("div");
-
-        const indexLabel = document.createElement("label");
-        indexLabel.innerText = `Index ${index + 1}:`;
-        keyPointDiv.appendChild(indexLabel);
-
-        const indexInput = document.createElement("input");
-        indexInput.type = "number";
-        indexInput.value = keyPoint.order;
-        indexInput.style.width = "40px";
-        indexInput.addEventListener("change", () => {
-            keyPoints[index].order = parseInt(indexInput.value);
-            keyPoints.sort((a, b) => a.order - b.order);
-            // displayKeyPoints();
-        });
-        keyPointDiv.appendChild(indexInput);
-
-        const widthLabel = document.createElement("label");
-        widthLabel.innerText = `Width:`;
-        keyPointDiv.appendChild(widthLabel);
-
-        const widthInput = document.createElement("input");
-        widthInput.type = "number";
-        widthInput.value = keyPoint.width;
-        widthInput.style.width = "50px";
-        widthInput.addEventListener("change", () => {
-            keyPoints[index].width = parseFloat(widthInput.value);
-        });
-        keyPointDiv.appendChild(widthInput);
-
-        const deleteButton = document.createElement("button");
-        deleteButton.innerText = "Remove";
-        deleteButton.onclick = () => {
-            keyPoints.splice(index, 1);
-            displayKeyPoints();
-        };
-        keyPointDiv.appendChild(deleteButton);
-
-        container.appendChild(keyPointDiv);
-    });
+function interpolate(a, b, t) {//used to set line widths that are not explictly defined
+    return a + (b - a) * t;
 }
-function addKeyPoint() {
+// function displayKeyPoints() {
+//     const container = document.getElementById("keyPointsContainer");
+//     container.innerHTML = "";
+
+//     keyPoints.forEach((keyPoint, index) => {
+//         const keyPointDiv = document.createElement("div");
+
+//         const indexLabel = document.createElement("label");
+//         indexLabel.innerText = `Index ${index + 1}:`;
+//         keyPointDiv.appendChild(indexLabel);
+
+//         const indexInput = document.createElement("input");
+//         indexInput.type = "number";
+//         indexInput.value = keyPoint.order;
+//         indexInput.style.width = "40px";
+//         indexInput.addEventListener("change", () => {
+//             keyPoints[index].order = parseInt(indexInput.value);
+//             keyPoints.sort((a, b) => a.order - b.order);
+//             // displayKeyPoints();
+//         });
+//         keyPointDiv.appendChild(indexInput);
+
+//         const widthLabel = document.createElement("label");
+//         widthLabel.innerText = `Width:`;
+//         keyPointDiv.appendChild(widthLabel);
+
+//         const widthInput = document.createElement("input");
+//         widthInput.type = "number";
+//         widthInput.value = keyPoint.width;
+//         widthInput.style.width = "50px";
+//         widthInput.addEventListener("change", () => {
+//             keyPoints[index].width = parseFloat(widthInput.value);
+//         });
+//         keyPointDiv.appendChild(widthInput);
+
+//         const deleteButton = document.createElement("button");
+//         deleteButton.innerText = "Remove";
+//         deleteButton.onclick = () => {
+//             keyPoints.splice(index, 1);
+//             displayKeyPoints();
+//         };
+//         keyPointDiv.appendChild(deleteButton);
+
+//         container.appendChild(keyPointDiv);
+//     });
+// }
+function addKeyPoint() {// add set width marker
     const indexInput = document.getElementById("orderInput");
     const widthInput = document.getElementById("widthInput");
 
@@ -175,7 +305,7 @@ function addKeyPoint() {
         displayKeyPoints();
     }
 }
-function updateKeyPointOrder() {
+function updateKeyPointOrder() {// ensures width points follow rules
     const stepsInput = document.getElementById("steps");
     const stepsValue = parseInt(stepsInput.value);
 
@@ -199,14 +329,10 @@ function updateKeyPointOrder() {
         displayKeyPoints();
 
         // Update the oldStepsValue for the next function call
-        oldStepsValue = stepsValue;
+        Time.oldStepsValue = stepsValue;
     }
 }
-function updateTstep() {
-    Time.ttstep = parseFloat(document.getElementById("tstep").value);
-    // main;
-}
-function updateStart() {
+function updateStart() { // gets value 
     Time.start = parseInt(document.getElementById("start").value);
     //main);
 }
@@ -223,7 +349,7 @@ function createControls() {
     container.innerHTML = "";
 
     const settingsContainer = document.createElement("div");
-    settingsContainer.classList.add("settings-container");
+    settingsContainer.id = "settingscontainer";
 
     Pendulums.forEach((pendulum, index) => {
         const pendulumDiv = document.createElement("div");
@@ -339,128 +465,6 @@ function chop(Points) {
     Points.pop();
     return Points
 };
-function draw(Points, svgContainer) {
-    svgContainer.innerHTML = ""
-    svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-    svg.setAttribute("width", "100%");
-    svg.setAttribute("height", "100%");
-
-    svgContainer.appendChild(svg);
-    Points.forEach((line) => {
-        const { p1, cp1, cp2, p2, width = 1 } = line || {};
-        // const { p1, cp1, cp2, p2, { width = 1 } = width | 1 } = line;
-        console.log(width)
-        // if (!width) { break }
-        //console.log(p1, cp1, cp2, p2, width)
-        const { x: p1x, y: p1y } = p1;
-        const { x: cp1x, y: cp1y } = cp1;
-        const { x: cp2x, y: cp2y } = cp2;
-        const { x: p2x, y: p2y } = p2;
-        const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
-        const d = `M ${p1x} ${p1y} C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${p2x} ${p2y}`;
-        path.setAttribute("d", d);
-        path.setAttribute("stroke", "Red");
-        console.log(width)
-        if (width) { console.log("hi") }
-        //{ path.setAttribute("stroke-width", width.toString()) };
-
-        path.setAttribute("fill", "none");
-        svg.appendChild(path);
-    });
-    setViewBox(svg, svgContainer, Points);
-    const panZoomInstance = panzoom(svg, {
-        zoomEnabled: true,
-        panEnabled: true,
-        controlIconsEnabled: true,
-        fit: true,
-        center: true,
-        minZoom: 0.015,
-        maxZoom: 1000,
-        initialZoom: 0.95,
-        beforePan: function () {
-            // Disable animation during panning to improve performance
-            panZoomInstance.disablePanAnimation();
-        },
-        onPan: function () {
-            // Re-enable animation after panning is complete
-            panZoomInstance.enablePanAnimation();
-        },
-        onZoom: function () {
-            // Update the viewBox after zooming
-            const { x, y } = panZoomInstance.getPan();
-            const zoomLevel = panZoomInstance.getZoom();
-            const viewBox = svg.getAttribute("viewBox").split(" ");
-            const viewBoxWidth = parseFloat(viewBox[2]);
-            const viewBoxHeight = parseFloat(viewBox[3]);
-        },
-    });
-    return (svg)
-};
-function setViewBox(svg, svgContainer, Points) {
-    const margin = 10;
-    const [minX, maxX, minY, maxY] = Points.reduce(
-        (acc, point) => [
-            Math.min(acc[0], point.p1.x),
-            Math.max(acc[1], point.p1.x),
-            Math.min(acc[2], point.p1.y),
-            Math.max(acc[3], point.p1.y),
-        ],
-        [Infinity, -Infinity, Infinity, -Infinity]
-    );
-    const contentWidth = maxX - minX * 2 //+ 2 * margin;
-    const contentHeight = maxY - minY * 2//+ 2 * margin;
-
-    const containerWidth = svgContainer.clientWidth;
-    const containerHeight = svgContainer.clientHeight;
-    const containerAspectRatio = containerWidth / containerHeight;
-
-    const contentAspectRatio = contentWidth / contentHeight;
-    let viewBoxWidth, viewBoxHeight;
-
-    if (containerAspectRatio > contentAspectRatio) {
-        viewBoxHeight = contentHeight;
-        viewBoxWidth = contentHeight * containerAspectRatio;
-    } else {
-        viewBoxWidth = contentWidth;
-        viewBoxHeight = contentWidth / containerAspectRatio;
-    }
-    console.log(minX, minY, maxX, maxY, margin, viewBoxHeight, viewBoxWidth)
-    svg.setAttribute("viewBox", `${minX - margin} ${minY - margin} ${parseFloat(viewBoxWidth)} ${parseFloat(viewBoxHeight)}`);
-
-};
-// function setViewBox(svg, svgContainer, Points) {
-//     if (!svg || !svgContainer || !Points) { console.log("error", svg, svgContainer, Points) }
-//     const margin = 10;
-
-//     const [minX, maxX, minY, maxY] = Points.reduce(
-//         (acc, point) => [
-//             Math.min(acc[0], point.p1.x),
-//             Math.max(acc[1], point.p1.x),
-//             Math.min(acc[2], point.p1.y),
-//             Math.max(acc[3], point.p1.y),
-//         ],
-//         [Infinity, -Infinity, Infinity, -Infinity]
-//     );
-//     const contentWidth = maxX - minX + 2 * margin;
-//     const contentHeight = maxY - minY + 2 * margin;
-
-//     const containerWidth = svgContainer.clientWidth;
-//     const containerHeight = svgContainer.clientHeight;
-//     const containerAspectRatio = containerWidth / containerHeight;
-
-//     const contentAspectRatio = contentWidth / contentHeight;
-//     let viewBoxWidth, viewBoxHeight;
-
-//     if (containerAspectRatio > contentAspectRatio) {
-//         viewBoxHeight = contentHeight;
-//         viewBoxWidth = contentHeight * containerAspectRatio;
-//     } else {
-//         viewBoxWidth = contentWidth;
-//         viewBoxHeight = contentWidth / containerAspectRatio;
-//     }
-//     svg.setAttribute("viewBox", `${minX - margin} ${minY - margin} ${parseFloat(viewBoxWidth)} ${parseFloat(viewBoxHeight)}`);
-//     //console.log("viewBox", `${minX - margin}`, `${minY - margin}`, `${parseFloat(viewBoxWidth)}`, `${parseFloat(viewBoxHeight)}`)
-// };
 function saveData() {
     const data = {
         pendulums: Pendulums,
@@ -560,9 +564,8 @@ function updateSteps(event) {
     if (!isNaN(value) && value >= 0) {
         Time.steps = value;
     }
-    console.log("Updated Steps:", Time.steps);
+    updateKeyPointOrder();
 }
-
 // const debouncedMain = debounceAndPreventRapidCalls(main, 3000, true);
 // document.querySelector("#yourInput").addEventListener("input", debouncedMain);
 // function update() {
@@ -612,3 +615,101 @@ function updateSteps(event) {
 //     pre.textContent = JSON.stringify(Pendulums, null, 2);
 //     homeDiv.appendChild(pre);
 // };
+function saveSvg(svg) {
+
+    if (svg = "") { console.log("no svg") }
+
+    var svgObject = svgContainer.firstElementChild;
+
+    //var svgobj = svgObject.outerHTML;
+
+    const svgString = new XMLSerializer().serializeToString(svgObject);
+
+    // Add the XML declaration to the beginning of the string
+    const svgFileContent = `<?xml version="1.0" encoding="UTF-8"?>\n${svgString}`;
+
+    // Create a Blob object with the SVG content
+    const blob = new Blob([svgFileContent], { type: "image/svg+xml" });
+
+    // Create a download link and click it to trigger the download
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = "my_svg_file.svg";
+    link.click();
+
+    // Revoke the object URL to free memory
+    URL.revokeObjectURL(link.href);
+};
+function displayKeyPoints() {
+    const container = document.getElementById("keyPointsContainer");
+    container.innerHTML = "";
+    // Add loop settings
+    const loopSettingsDiv = document.createElement("div");
+
+    const loopLabel = document.createElement("label");
+    loopLabel.innerText = "Loop:";
+    loopSettingsDiv.appendChild(loopLabel);
+
+    const loopCheckbox = document.createElement("input");
+    loopCheckbox.type = "checkbox";
+    loopSettingsDiv.appendChild(loopCheckbox);
+
+    const loopLengthLabel = document.createElement("label");
+    loopLengthLabel.innerText = "Loop Length:";
+    loopSettingsDiv.appendChild(loopLengthLabel);
+
+    const loopLengthInput = document.createElement("input");
+    loopLengthInput.type = "number";
+    loopLengthInput.style.width = "60px";
+    loopLengthInput.disabled = true; // Initially disable the loop length input
+    loopSettingsDiv.appendChild(loopLengthInput);
+
+    loopCheckbox.addEventListener("change", () => {
+        loopLengthInput.disabled = !loopCheckbox.checked; // Enable/disable loop length input based on the checkbox status
+    });
+
+    container.appendChild(loopSettingsDiv);
+
+    // Existing key point controls
+    keyPoints.forEach((keyPoint, index) => {
+        const keyPointDiv = document.createElement("div");
+
+        const indexLabel = document.createElement("label");
+        indexLabel.innerText = `Index ${index + 1}:`;
+        keyPointDiv.appendChild(indexLabel);
+
+        const indexInput = document.createElement("input");
+        indexInput.type = "number";
+        indexInput.value = keyPoint.order;
+        indexInput.style.width = "40px";
+        indexInput.addEventListener("change", () => {
+            keyPoints[index].order = parseInt(indexInput.value);
+            keyPoints.sort((a, b) => a.order - b.order);
+            // displayKeyPoints();
+        });
+        keyPointDiv.appendChild(indexInput);
+
+        const widthLabel = document.createElement("label");
+        widthLabel.innerText = `Width:`;
+        keyPointDiv.appendChild(widthLabel);
+
+        const widthInput = document.createElement("input");
+        widthInput.type = "number";
+        widthInput.value = keyPoint.width;
+        widthInput.style.width = "50px";
+        widthInput.addEventListener("change", () => {
+            keyPoints[index].width = parseFloat(widthInput.value);
+        });
+        keyPointDiv.appendChild(widthInput);
+
+        const deleteButton = document.createElement("button");
+        deleteButton.innerText = "Remove";
+        deleteButton.onclick = () => {
+            keyPoints.splice(index, 1);
+            displayKeyPoints();
+        };
+        keyPointDiv.appendChild(deleteButton);
+
+        container.appendChild(keyPointDiv);
+    });
+}

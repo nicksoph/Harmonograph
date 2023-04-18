@@ -4,7 +4,7 @@
 }
 
 .left-column {
-    width: 360px;
+    width: 350px;
     background-color: lightgray;
     padding: 12px;
 }
@@ -27,7 +27,7 @@
     min-height: 100%;
 }
 
-.settings-container {
+#settingscontainer {
     display: flex;
     flex-wrap: wrap;
 }
