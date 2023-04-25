@@ -1,0 +1,27 @@
+the structure looks like this -
+
+<div class="right-column">
+            <div id="svg-viewport">
+                <div id="svg-container"></div>
+
+
+with the svg being created in svg-container  and the css here applies 
+
+
+.right-column {
+    flex: 1;
+    display: flex;
+    /* align-items: center; */
+    background-color: whitesmoke;
+}
+
+#svg-viewport {
+    overflow: hidden;
+    width: 100%;
+    height: 100%;
+}
+
+#svg-container {
+    position: relative;
+    min-height: 100%;
+}

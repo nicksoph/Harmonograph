@@ -12,7 +12,7 @@
 .right-column {
     flex: 1;
     display: flex;
-    align-items: center;
+    /* align-items: center; */
     background-color: whitesmoke;
 }
 
@@ -41,6 +41,25 @@
     text-align: right;
 }
 
+#colorPickerDiv {
+    text-align: left;
+}
+
+.colour-point {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+#colour {
+    text-align: right;
+}
+
+#addpens {
+    text-align: right;
+}
+
+
 #runsave {
     text-align: right;
 }
@@ -50,15 +69,15 @@
 }
 
 #timecontrols {
-    text-align: right;
-    padding-right: 78px;
+    text-align: left;
+    /* padding-right: 78px; */
 }
 
 #timecontrols input[type="number"] {
-    width: 55px;
+    width: 40px;
 }
 
-#timerunbtns {
+#timebtns {
     display: flex;
 }
 
@@ -67,10 +86,31 @@
 }
 
 #input-container input[type="number"] {
-    width: 80px;
+    width: 45px;
 }
 
 #keyPointsContainer {
     text-align: right;
     padding-right: 78px;
+}
+
+.color-display {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.inline-block {
+    display: inline-block;
+}
+
+.color-picker {
+    width: 40px;
+    height: 20px;
+    cursor: pointer;
+}
+
+.colourSettingsDiv {
+    display: flex;
+
 }

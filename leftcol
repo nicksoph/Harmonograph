@@ -1,0 +1,199 @@
+<div class="left-column">
+    <div id="top"></div>
+    <div id="timerunbtns">
+        <div id="timecontrols">
+            <label for="start">Start:</label>
+            <input type="number" step="any" id="start" value="0"><br>
+            <label for="end">End:</label>
+            <input type="number" step="any" id="end" value="1"><br>
+            <label for="steps">Steps:</label>
+            <input type="number" step="1" min="0" id="steps" value="1000"><br>
+        </div>
+        <br>
+        <div id="runsave">
+            <button id="run">Run</button>
+            <button onclick="loadData()">Load Data</button> <br>
+            <button onclick="saveData()">Save Data</button> <br>
+            <button id="savesvg">Save SVG File</button>
+        </div>
+    </div>
+    .<br>
+    <div id="pendCtrls">
+        <div id="settingscontainer">
+            <div>
+                <bold>Pen. 1</bold>
+                <div><label>x<input type="radio" name="axis-0" value="x"></label><label>y<input type="radio"
+                            name="axis-0" value="y"></label></div>
+                <div class="slider-container"><label>amplitude</label><input type="number" min="0" max="1000" step="10"
+                        pattern="[0-9]*" class="control-input"></div>
+                <div class="slider-container"><label>frequency</label><input type="number" min="0" max="1000"
+                        step="0.01" pattern="[0-9]*" class="control-input"></div>
+                <div class="slider-container"><label>phaseShift</label><input type="number" min="-3.141592653589793"
+                        max="3.141592653589793" step="0.01" pattern="[0-9]*" class="control-input"></div>
+                <div class="slider-container"><label>damping</label><input type="number" min="0" max="1" step="0.001"
+                        pattern="[0-9]*" class="control-input"></div>
+            </div>
+            <div>
+                <bold>Pen. 2</bold>
+                <div><label>x<input type="radio" name="axis-1" value="x"></label><label>y<input type="radio"
+                            name="axis-1" value="y"></label></div>
+                <div class="slider-container"><input type="number" min="0" max="1000" step="10" pattern="[0-9]*"
+                        class="control-input"></div>
+                <div class="slider-container"><input type="number" min="0" max="1000" step="0.01" pattern="[0-9]*"
+                        class="control-input"></div>
+                <div class="slider-container"><input type="number" min="-3.141592653589793" max="3.141592653589793"
+                        step="0.01" pattern="[0-9]*" class="control-input"></div>
+                <div class="slider-container"><input type="number" min="0" max="1" step="0.001" pattern="[0-9]*"
+                        class="control-input"></div>
+            </div>
+            <div>
+                <bold>Pen. 3</bold>
+                <div><label>x<input type="radio" name="axis-2" value="x"></label><label>y<input type="radio"
+                            name="axis-2" value="y"></label></div>
+                <div class="slider-container"><input type="number" min="0" max="1000" step="10" pattern="[0-9]*"
+                        class="control-input"></div>
+                <div class="slider-container"><input type="number" min="0" max="1000" step="0.01" pattern="[0-9]*"
+                        class="control-input"></div>
+                <div class="slider-container"><input type="number" min="-3.141592653589793" max="3.141592653589793"
+                        step="0.01" pattern="[0-9]*" class="control-input"></div>
+                <div class="slider-container"><input type="number" min="0" max="1" step="0.001" pattern="[0-9]*"
+                        class="control-input"></div>
+            </div>
+            <div>
+                <bold>Pen. 4</bold>
+                <div><label>x<input type="radio" name="axis-3" value="x"></label><label>y<input type="radio"
+                            name="axis-3" value="y"></label></div>
+                <div class="slider-container"><input type="number" min="0" max="1000" step="10" pattern="[0-9]*"
+                        class="control-input"></div>
+                <div class="slider-container"><input type="number" min="0" max="1000" step="0.01" pattern="[0-9]*"
+                        class="control-input"></div>
+                <div class="slider-container"><input type="number" min="-3.141592653589793" max="3.141592653589793"
+                        step="0.01" pattern="[0-9]*" class="control-input"></div>
+                <div class="slider-container"><input type="number" min="0" max="1" step="0.001" pattern="[0-9]*"
+                        class="control-input"></div>
+            </div>
+        </div>
+    </div>
+    <div id="addpens">
+        <button id="addPendulum">Add Pendulum</button>
+        <button id="deletePendulum">Delete Pendulum</button>
+
+    </div>
+    <div id="colour">
+        <!-- <h3>Gradient Line Creator</h3> -->
+        .<br>
+        <label for="color">Select a color:</label>
+        <input type="color" id="color" name="color" value="#000000">
+        <label for="order">Order:</label>
+        <input type="number" id="order" name="order" min="0">
+        <button id="addColor">Add Color</button>
+        <div id="colourSettingsDiv">
+            <div class="colour-point"><label>Order 0:</label><input type="number" style="width: 40px;">
+                <div class="inline-block"><label class="inline-block">Color:</label>
+                    <div class="inline-block color-picker"
+                        style="background-color: rgb(0, 0, 0); width: 40px; height: 20px; cursor: pointer;"></div><input
+                        type="color" style="display: none;">
+                </div><button>Remove</button>
+            </div>
+            <div class="colour-point"><label>Order 1:</label><input type="number" style="width: 40px;">
+                <div class="inline-block"><label class="inline-block">Color:</label>
+                    <div class="inline-block color-picker"
+                        style="background-color: rgb(144, 86, 215); width: 40px; height: 20px; cursor: pointer;"></div>
+                    <input type="color" style="display: none;">
+                </div><button>Remove</button>
+            </div>
+            <div class="colour-point"><label>Order 2:</label><input type="number" style="width: 40px;">
+                <div class="inline-block"><label class="inline-block">Color:</label>
+                    <div class="inline-block color-picker"
+                        style="background-color: rgb(40, 50, 129); width: 40px; height: 20px; cursor: pointer;"></div>
+                    <input type="color" style="display: none;">
+                </div><button>Remove</button>
+            </div>
+            <div class="colour-point"><label>Order 3:</label><input type="number" style="width: 40px;">
+                <div class="inline-block"><label class="inline-block">Color:</label>
+                    <div class="inline-block color-picker"
+                        style="background-color: rgb(144, 86, 215); width: 40px; height: 20px; cursor: pointer;"></div>
+                    <input type="color" style="display: none;">
+                </div><button>Remove</button>
+            </div>
+            <div class="colour-point"><label>Order 4:</label><input type="number" style="width: 40px;">
+                <div class="inline-block"><label class="inline-block">Color:</label>
+                    <div class="inline-block color-picker"
+                        style="background-color: rgb(40, 50, 129); width: 40px; height: 20px; cursor: pointer;"></div>
+                    <input type="color" style="display: none;">
+                </div><button>Remove</button>
+            </div>
+            <div class="colour-point"><label>Order 5:</label><input type="number" style="width: 40px;">
+                <div class="inline-block"><label class="inline-block">Color:</label>
+                    <div class="inline-block color-picker"
+                        style="background-color: rgb(144, 86, 215); width: 40px; height: 20px; cursor: pointer;"></div>
+                    <input type="color" style="display: none;">
+                </div><button>Remove</button>
+            </div>
+            <div class="colour-point"><label>Order 6:</label><input type="number" style="width: 40px;">
+                <div class="inline-block"><label class="inline-block">Color:</label>
+                    <div class="inline-block color-picker"
+                        style="background-color: rgb(40, 23, 129); width: 40px; height: 20px; cursor: pointer;"></div>
+                    <input type="color" style="display: none;">
+                </div><button>Remove</button>
+            </div>
+            <div class="colour-point"><label>Order 7:</label><input type="number" style="width: 40px;">
+                <div class="inline-block"><label class="inline-block">Color:</label>
+                    <div class="inline-block color-picker"
+                        style="background-color: rgb(144, 86, 215); width: 40px; height: 20px; cursor: pointer;"></div>
+                    <input type="color" style="display: none;">
+                </div><button>Remove</button>
+            </div>
+            <div class="colour-point"><label>Order 8:</label><input type="number" style="width: 40px;">
+                <div class="inline-block"><label class="inline-block">Color:</label>
+                    <div class="inline-block color-picker"
+                        style="background-color: rgb(40, 40, 129); width: 40px; height: 20px; cursor: pointer;"></div>
+                    <input type="color" style="display: none;">
+                </div><button>Remove</button>
+            </div>
+        </div>
+        <br>
+    </div>
+    <div id="width">
+        <div id="widthPointsContainer">
+            <div id="loopSettingsDivHead">
+                <label id="loopLabel">Loop:</label>
+                <input type="checkbox" id="loopCheckbox">
+                <label id="loopLengthLabel">Loop Length:</label>
+                <input type="number" style="width: 60px;" id="loopLengthInput">
+                <label id="loopLabel">Markers:</label>
+                <input type="checkbox" id="markersCheckbox">
+                <button id="goLoop">MakeLoop</button>
+            </div>
+            <div id="loopSettingsDiv">
+                <div><label>Order 0:</label><input type="number" style="width: 40px;"><label>Width:</label><input
+                        type="number" style="width: 40px;"><button>Remove</button></div>
+                <div><label>Order 1:</label><input type="number" style="width: 40px;"><label>Width:</label><input
+                        type="number" style="width: 40px;"><button>Remove</button></div>
+                <div><label>Order 2:</label><input type="number" style="width: 40px;"><label>Width:</label><input
+                        type="number" style="width: 40px;"><button>Remove</button></div>
+                <div><label>Order 3:</label><input type="number" style="width: 40px;"><label>Width:</label><input
+                        type="number" style="width: 40px;"><button>Remove</button></div>
+                <div><label>Order 4:</label><input type="number" style="width: 40px;"><label>Width:</label><input
+                        type="number" style="width: 40px;"><button>Remove</button></div>
+            </div>
+        </div>
+
+
+        <div>
+            <label for="orderInput">Order:</label>
+            <input type="number" id="orderInput" min="0" style="width: 40px;">
+            <label for="widthInput">Width:</label>
+            <input type="number" id="widthInput" min="0" step="0.1" style="width: 40px;">
+            <button onclick="addKeyPoint()">Add Point</button>
+        </div>
+
+        <div id="file"></div>
+        <div id="home"></div>
+    </div>
+</div>
+
+i have a 350px wide div with an id of left-column, it has 6 direct children that are Div's with Id's - top, timerunbtns,
+pendCtrls, addpens, colour and width. I want to have 4 buttons in the top div that show and hide the other divs (without
+leaving the space vacant) The four buttons should be called "Time" which controls the hiding and showing of timerunbtns,
+"Pendulums" which should control both pendCtrls and addpens as one setting, "Colour" and "Width"

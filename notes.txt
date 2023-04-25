@@ -1,0 +1,57 @@
+
+i have this html that I want to use to hold the data;
+
+<div id="colour">
+                <h3>Gradient Line Creator</h3>
+                <label for="color">Select a color:</label>
+                <input type="color" id="color" name="color" value="#000000">
+                <label for="order">Order:</label>
+                <input type="number" id="order" name="order" min="0">
+                <button id="addColor">Add Color</button>
+                <div id="coloursdiv">
+
+                </div>
+                <br>
+            </div>
+
+and a javascript file that shows data relating to the order and width properties of an object in an array, which Im showing below as an example because I want code to display the information for colour and order in a similar way that this shows width and order. I would like small divs that will be coloured according to the colour chosen and the order and colour next to it 
+
+
+
+function setLineColours(colourPoints, Points) {//add line colour
+    let colourPointOrder = 0;
+    for (let i = 0; i < Points.length; i++) {
+        const point = Points[i];
+        let colour;
+
+        if (colourPointOrder < colourPoints.length && colourPoints[colourPointOrder].order === i) {
+            colour = colourPoints[colourPointOrder].colour;
+            colourPointOrder++;
+        } else if (colourPointOrder > 0 && colourPointOrder < colourPoints.length) {
+            const prevColourPoint = colourPoints[colourPointOrder - 1];
+            const nextColourPoint = colourPoints[colourPointOrder];
+            const t = (i - prevColourPoint.order) / (nextColourPoint.order - prevColourPoint.order);
+            colour = interpolate(prevColourPoint.colour, nextColourPoint.colour, t);
+        } else {
+            colour = colourPointOrder > 0 ? colourPoints[colourPointOrder - 1].colour : null;
+        }
+
+        if (colour !== null) {
+            if (!point.hasOwnProperty('colour')) {
+                Object.defineProperty(point, 'colour', {
+                    writable: true,
+                    enumerable: true,
+                    configurable: true,
+                    value: colour
+                });
+            } else {
+                point.colour = colour;
+            }
+        } else {
+            console.error(`No colour value computed for point at index ${i}.`);
+        }
+    }
+}
+
+{"pendulums":[{"axis":"x","amplitude":100,"frequency":33.02,"phaseShift":1.575,"damping":0.5},{"axis":"y","amplitude":100,"frequency":33,"phaseShift":0,"damping":0.5},{"axis":"x","amplitude":100,"frequency":66,"phaseShift":0,"damping":0.5},{"axis":"y","amplitude":100,"frequency":66.01,"phaseShift":1.54,"damping":0.5}],"time":{"start":0,"end":1,"steps":1000,"oldStepsValue":1000},"widthpoints":[{"order":0,"width":1},{"order":49,"width":1},{"order":50,"width":55},{"order":51,"width":1},{"order":100,"width":1}],
+"colourpoints":[{"color":"#000000","order":0},{"color":"#9056d7","order":10},{"color":"#283281","order":100},{"color":"#9056d7","order":10},{"color":"#283281","order":100},{"color":"#9056d7","order":200},{"color":"#283281","order":500},{"color":"#9056d7","order":10},{"color":"#283281","order":1000}]}
